@@ -14,8 +14,9 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { formSchema, TFormSchema } from "../_schema/schema";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
 
 const SignUpPage = () => {
     const router = useRouter();
@@ -29,7 +30,12 @@ const SignUpPage = () => {
         if (result?.error) {
             console.log(result.error);
         } else {
-            router.push("/dashboard");
+            toast({
+                title: "Berhasil",
+                description: "Anda berhasil masuk",
+                variant: "default",
+            });
+            redirect( "/");
         }
     };
 
@@ -44,7 +50,7 @@ const SignUpPage = () => {
                 </CardHeader>
                 <CardContent>
                     <AutoForm onSubmit={handleSubmit} formSchema={formSchema} className="w-[408px]">
-                        <AutoFormSubmit className="w-full">Daftar</AutoFormSubmit>
+                        <AutoFormSubmit className="w-full">Masuk</AutoFormSubmit>
                         <Separator className="my-6" />
                         <Button variant="outline" className="w-full space-x-2 text-primary">
                             <span className="font-bold">G</span>
