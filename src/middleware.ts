@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
     return redirectTo("/dashboard", request);
   }
 
-  const publicRoutes = ["/sign-up", "/register"];
+  const publicRoutes = ["/sign-up", "/sign-in"];
   if (publicRoutes.includes(pathname)) {
     if (token) {
       return redirectTo("/dashboard", request);
@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!token) {
-    return redirectTo("/sign-up", request);
+    return redirectTo("/sign-in", request);
   }
 
   return NextResponse.next();
@@ -29,5 +29,5 @@ function redirectTo(path: string, request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/sign-up", "/register", "/"],
+  matcher: ["/dashboard/:path*", "/"],
 };

@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
               token: string;
             };
           }>(
-            "/auth/sign-up",
+            "/auth/login",
             {
               email: credentials.email,
               password: credentials.password,
@@ -82,6 +82,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/sign-up",
+    signIn: "/auth/sign-in",
   },
 };
