@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Employee Management System
+==========================
 
-## Getting Started
+This project is an **Employee Management System** built with **Next.js 14**, using the **App Directory** structure, **Prisma ORM**, and **Zod** for validation. The UI components are styled using **ShadCN UI**, and **PNPM** is used as the package manager.
 
-First, run the development server:
+Technologies Used
+-----------------
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   **Next.js 14 (App Directory)**
+-   **Zod** for schema validation
+-   **ShadCN UI** for styling and components
+-   **PNPM** for package management
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Prerequisites
+-------------
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Before you begin, ensure you have the following installed:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   **Node.js** (v18 or later)
+-   **PNPM** (v8 or later)
 
-## Learn More
+Setup and Installation
+----------------------
 
-To learn more about Next.js, take a look at the following resources:
+### 1\. Clone the repository:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+bash
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Copy code
 
-## Deploy on Vercel
+`git clone https://github.com/egagofur/fe-test-semudahitu.git
+cd be-test-semudahitu`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2\. Install dependencies:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+bash
+
+Copy code
+
+`pnpm install`
+
+### 3\. Set up your environment variables:
+
+-   Copy the `.env.example` file to `.env`:
+
+bash
+
+Copy code
+
+`pnpm dev`
+
+The server should now be running at `http://localhost:3000`.
+
+API Documentation
+-----------------
+
+This Employee Management System provides a RESTful API for managing employee data. The API is structured as follows:
+
+-   **GET** `/api/employees` - Retrieve a list of all employees
+-   **POST** `/api/employees` - Create a new employee
+-   **GET** `/api/employees/{id}` - Retrieve a specific employee by ID
+-   **PUT** `/api/employees/{id}` - Update an employee's details
+-   **DELETE** `/api/employees/{id}` - Delete an employee by ID
+
+### Validation
+
+-   All input data is validated using **Zod** for strict type safety.
+-   Example of Zod validation:
+
+typescript
+
+Copy code
+
+`import { z } from 'zod';
+
+const employeeSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email format"),
+  position: z.string().min(1, "Position is required"),
+  salary: z.number().positive("Salary must be a positive number"),
+});`
