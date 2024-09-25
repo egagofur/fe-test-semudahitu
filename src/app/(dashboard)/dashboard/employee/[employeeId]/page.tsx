@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { CreateEmployee } from '../_modules/form-employee';
 import { fetcher } from '@/lib/fetcher';
 import { TEmployeeSchemaValues } from '../_schema/form-schema';
+import { useParams } from 'next/navigation';
 
 const breadcrumbItems = [
   { title: 'Dashboard', link: '/dashboard' },
@@ -14,12 +15,13 @@ const breadcrumbItems = [
 ];
 
 export default function Page() {
+    const params = useParams();
     const [dataUpdate, setDataUpdate] = useState<{
         message: string;
         data: TEmployeeSchemaValues;
     } | null>(null);
 
-    const employeeId = 'cm1ainxok00022ie42cz8t1uq';
+    const employeeId = params.employeeId[0]
 
     const getEmployee = async (id: string) => {
     const response = await fetcher.get<{

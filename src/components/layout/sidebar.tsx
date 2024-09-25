@@ -6,7 +6,6 @@ import { navItems } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import { ChevronLeft } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
-import Link from 'next/link';
 
 type SidebarProps = {
   className?: string;
@@ -27,8 +26,10 @@ export default function Sidebar({ className }: SidebarProps) {
         className
       )}
     >
-      <div className="hidden p-5 pt-10 lg:block">
-       HRISS
+      <div className="hidden p-5  pt-10 lg:block">
+      <h1 className="text-2xl font-bold text-foreground">
+           Hris
+      </h1>
       </div>
       <ChevronLeft
         className={cn(

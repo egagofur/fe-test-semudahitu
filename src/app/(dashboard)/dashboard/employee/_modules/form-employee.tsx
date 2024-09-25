@@ -47,19 +47,14 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
 }) => {
   const params = useParams();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imgLoading, setImgLoading] = useState(false);
-  const title = initialData ? 'Edit Employee' : 'Create Your Employee';
-  const description = initialData
-    ? 'Edit a Employee'
-    : 'To create your Employee, please fill out the following form.';
-  const toastMessage = initialData ? 'Product updated.' : 'Product created.';
-  const action = initialData ? 'Save changes' : 'Create';
-  const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-  const [data, setData] = useState({});
-  const delta = currentStep - previousStep;
+  const [previousStep, setPreviousStep] = useState(0);
+
+  const title = initialData ? 'Edit Employee' : 'Create Your Employee';
+  const description = initialData ? 'Edit an Employee' : 'To create your Employee, please fill out the following form.';
+  const toastMessage = initialData ? 'Employee updated.' : 'Employee created.';
+  const action = initialData ? 'Save changes' : 'Create';
 
   const defaultValues: TEmployeeSchemaValues = {
     firstName: '',
@@ -107,18 +102,28 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
     formState: { errors }
   } = form;
 
-  useEffect(() => {
+  console.log(form.getValues());
+
+    useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
+      const formattedData = {
+        ...initialData,
+        birthdate: new Date(initialData.birthdate),
+        joinDate: new Date(initialData.joinDate),
+        passportExpiry: initialData.passportExpiry ? new Date(initialData.passportExpiry) : undefined,
+        mobilePhone: initialData.mobilePhone || '',
+phone: initialData.phone || '',
+      };
+      form.reset(formattedData);
     }
-  }, [initialData]);
+  }, [initialData, form]);
 
 
-  const onSubmit = async (data: TEmployeeSchemaValues) => {
+const onSubmit = async (data: TEmployeeSchemaValues) => {
     try {
       setLoading(true);
       if (initialData) {
-        await fetcher.put(`/employees/${params.id}`, data);
+        await fetcher.put(`/employees/${initialData.id}`, data);
       } else {
         await fetcher.post(`/employees`, data);
       }
@@ -127,93 +132,44 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
         title: 'Success',
         description: toastMessage,
         variant: 'default'
-      })
+      });
       form.reset();
     } catch (error: any) {
-        console.log(error)
-        toast({
-            title: 'Error',
-            description: error.message,
-            variant: 'destructive'
-        })
+      console.log(error);
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive'
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-        await fetcher.delete(`/employees/${params.id}`);
-      router.refresh();
-      router.push(`/${params.id}`);
-    } catch (error: any) {
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
-  };
-
-
-
-  type FieldName = keyof TEmployeeSchemaValues;
 
   const steps = [
     {
       id: 'Step 1',
       name: 'Personal Data',
-      fields: ['firstname', 'lastname', 'email', 'contactno', 'country', 'city']
+      fields: ['firstName', 'lastName', 'email', 'mobilePhone', 'phone', 'placeOfBirth', 'birthdate', 'gender', 'maritalStatus', 'bloodType', 'religion']
     },
     {
       id: 'Step 2',
       name: 'Identity & Address',
-      fields: [
-        'nik',
-        'passportNumber',
-        'postalCode',
-        'citizenIdAddress',
-        'residentialAddress'
-      ]
+      fields: ['nik', 'passportNumber', 'passportExpiry', 'postalCode', 'citizenIdAddress', 'residentialAddress']
     },
     {
-        id: 'Step 3',
-        name: 'Employement Data',
-        fields: [
-            'employeeId',
-            'barcode',
-            'groupStructure',
-            'employmentStatus',
-            'joinDate',
-            'branch',
-            'department',
-            'jobPosition',
-            'jobLevel',
-            'schedule',
-            'manager',
-            'sbu',
-            'grade',
-            'class',
-            'approvalLine'
-        ]
+      id: 'Step 3',
+      name: 'Employment Data',
+      fields: ['employeeId', 'barcode', 'groupStructure', 'employmentStatus', 'joinDate', 'branch', 'department', 'jobPosition', 'jobLevel', 'schedule', 'manager', 'sbu', 'grade', 'class', 'approvalLine']
     }
   ];
 
   const next = async () => {
     const fields = steps[currentStep].fields;
-
-    const output = await form.trigger(fields as FieldName[], {
-      shouldFocus: true
-    });
-
-     console.log('output', output);
-
+    const output = await form.trigger(fields as Array<keyof TEmployeeSchemaValues>, { shouldFocus: true });
     if (!output) return;
-
     if (currentStep < steps.length - 1) {
-      if (currentStep === steps.length - 3) {
-        console.log('onSubmit');
-        await form.handleSubmit(onSubmit)();
-      }
       setPreviousStep(currentStep);
       setCurrentStep((step) => step + 1);
     }
@@ -228,14 +184,14 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
 
   return (
     <>
-      <div className="flex items-center justify-between">
+     <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         {initialData && (
           <Button
             disabled={loading}
             variant="destructive"
             size="sm"
-            onClick={() => setOpen(true)}
+            onClick={() => {/* Implement delete functionality */}}
           >
             <Trash className="h-4 w-4" />
           </Button>
@@ -396,31 +352,28 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="birthdate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Birthdate</FormLabel>
-                        <FormControl>
-                            <CalendarDatePicker
-                              date={field.value}
-                    onDateSelect={(value) => {
-                      form.setValue("birthdate", value);
-                    }}
-                    variant="outline"
-                    className="min-w-[250px] w-full"
-                    disabledDates={{
-                      before: new Date(1900, 0, 1),
-                      after: new Date(),
-                    }}
-                              {...field}
-                            />
-                        </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        <FormField
+            control={form.control}
+            name="birthdate"
+            render={({ field }) => (
+        <FormItem>
+            <FormLabel>Birthdate</FormLabel>
+        <FormControl>
+        <CalendarDatePicker
+            date={field.value}
+          onDateSelect={(value) => form.setValue("birthdate", value)}
+          variant="outline"
+          className="min-w-[250px] w-full"
+          disabledDates={{
+            before: new Date(1900, 0, 1),
+            after: new Date(),
+          }}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
      <FormField
   control={form.control}
   name="gender"
@@ -453,20 +406,21 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Maeital Status</FormLabel>
+                              <FormControl>
                       <Select
                         disabled={loading}
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        defaultValue={field.value}
+                         onValueChange={field.onChange}
+      value={field.value}
+      defaultValue={field.value}
                       >
-                        <FormControl>
+
                           <SelectTrigger>
                             <SelectValue
                               defaultValue={field.value}
                               placeholder="Select a status"
                             />
                           </SelectTrigger>
-                        </FormControl>
+
                         <SelectContent className='flex'>
                             <SelectItem value='yes'>
                                 Yes
@@ -476,6 +430,7 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
                             </SelectItem>
                         </SelectContent>
                       </Select>
+                        </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -596,6 +551,28 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
                     </FormItem>
                   )}
                 />
+                     <FormField
+  control={form.control}
+  name="passportExpiry"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Passport Expiry</FormLabel>
+      <FormControl>
+        <CalendarDatePicker
+          date={field.value}
+          onDateSelect={(value) => form.setValue("passportExpiry", value)}
+          variant="outline"
+          className="min-w-[250px] w-full"
+          disabledDates={{
+            before: new Date(1900, 0, 1),
+            after: new Date(),
+          }}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
                 <FormField
                   control={form.control}
                   name="postalCode"
@@ -737,31 +714,28 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="joinDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Join Date</FormLabel>
-                     <FormControl>
-                           <CalendarDatePicker
-                                date={field.value}
-                                onDateSelect={(value) => {
-                                  form.setValue("joinDate", value);
-                                }}
-                                variant="outline"
-                                className="min-w-[250px] w-full"
-                                disabledDates={{
-                                  before: new Date(1900, 0, 1),
-                                  after: new Date(),
-                                }}
-                                {...field}
-                            />
-                     </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+               <FormField
+  control={form.control}
+  name="joinDate"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Join Date</FormLabel>
+      <FormControl>
+        <CalendarDatePicker
+          date={field.value}
+          onDateSelect={(value) => form.setValue("joinDate", value)}
+          variant="outline"
+          className="min-w-[250px] w-full"
+          disabledDates={{
+            before: new Date(1900, 0, 1),
+            after: new Date(),
+          }}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
                 <FormField
                   control={form.control}
                   name="branch"
@@ -990,10 +964,10 @@ export const CreateEmployee: React.FC<EmployeeFormType> = ({
             )}
           </div>
 
-            {currentStep === 2 && (
-            <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+           {currentStep === steps.length - 1 && (
+            <Button disabled={loading} type="submit">
+              {action}
+            </Button>
           )}
         </form>
       </Form>

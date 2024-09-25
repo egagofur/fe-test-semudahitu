@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Employee } from '@/constants/data';
+import { fetcher } from '@/lib/fetcher';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import {  useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -18,11 +19,23 @@ interface CellActionProps {
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => {
+   try {
+      setLoading(true);
+        await fetcher.delete(`/employees/${data.id}`);
+      router.refresh();
+      router.push(`/dashboard/employee`);
+    } catch (error: any) {
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  };
+
 
   return (
     <>
@@ -43,7 +56,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/user/${data.id}`)}
+            onClick={() => router.push(`/dashboard/employee/${data.id}`)}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>
