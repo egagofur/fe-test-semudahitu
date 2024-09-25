@@ -21,7 +21,7 @@ export default function Page() {
         data: TEmployeeSchemaValues;
     } | null>(null);
 
-    const employeeId = params.employeeId[0]
+    const employeeId = params.employeeId
 
     const getEmployee = async (id: string) => {
     const response = await fetcher.get<{
