@@ -79,3 +79,7 @@ const employeeSchema = z.object({
   position: z.string().min(1, "Position is required"),
   salary: z.number().positive("Salary must be a positive number"),
 });`
+
+## Demo vidio
+### https://www.loom.com/share/5c5396a596704bc9885159b7dcdefc86
+### https://www.loom.com/share/600216b9433d437d818535968a7a8c04
