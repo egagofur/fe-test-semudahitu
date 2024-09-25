@@ -1,14 +1,6 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import PageContainer from '@/components/layout/page-container';
-import { columns } from '@/components/table/columns';
-import { EmployeeTable } from '@/components/table/employee-table';
-import { buttonVariants } from '@/components/ui/button';
-import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
-import { Employee } from '@/constants/data';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
+import { EmployeeList } from './_modules/employee-list';
 
 const breadcrumbItems = [
   { title: 'Dashboard', link: '/dashboard' },
@@ -21,49 +13,15 @@ type paramsProps = {
   };
 };
 
-export default async function page({ searchParams }: paramsProps) {
+export default function EmployeePage({ searchParams }: paramsProps) {
   const page = Number(searchParams.page) || 1;
   const pageLimit = Number(searchParams.limit) || 10;
-  const country = searchParams.search || null;
-  const offset = (page - 1) * pageLimit;
+  const country = searchParams.search?.toString() || null;
 
-  const res = await fetch(
-    `https://api.slingacademy.com/v1/sample-data/users?offset=${offset}&limit=${pageLimit}` +
-      (country ? `&search=${country}` : '')
-  );
-  const employeeRes = await res.json();
-  const totalUsers = employeeRes.total_users; //1000
-  const pageCount = Math.ceil(totalUsers / pageLimit);
-  const employee: Employee[] = employeeRes.users;
   return (
     <PageContainer>
-      <div className="space-y-4">
-        <Breadcrumbs items={breadcrumbItems} />
-
-        <div className="flex items-start justify-between">
-          <Heading
-            title={`Employee (${totalUsers})`}
-            description=""
-          />
-
-          <Link
-            href={'/dashboard/employee/new'}
-            className={cn(buttonVariants({ variant: 'default' }))}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link>
-        </div>
-        <Separator />
-
-        <EmployeeTable
-          searchKey="country"
-          pageNo={page}
-          columns={columns}
-          totalUsers={totalUsers}
-          data={employee}
-          pageCount={pageCount}
-        />
-      </div>
+      <Breadcrumbs items={breadcrumbItems} />
+      <EmployeeList page={page} pageLimit={pageLimit} country={country} />
     </PageContainer>
   );
 }

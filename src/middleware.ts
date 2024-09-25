@@ -5,16 +5,20 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
   const { pathname } = request.nextUrl;
 
-  if(pathname === "/") {
-    return redirectTo("/dashboard", request);
-  }
-
   const publicRoutes = ["/sign-up", "/sign-in"];
   if (publicRoutes.includes(pathname)) {
     if (token) {
       return redirectTo("/dashboard", request);
     }
     return NextResponse.next();
+  }
+
+  if(!token && pathname === '/') {
+    return redirectTo("/sign-in", request);
+  }
+
+  if(token && pathname === '/') {
+    return redirectTo("/dashboard", request);
   }
 
   if (!token) {
@@ -29,5 +33,5 @@ function redirectTo(path: string, request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/"],
+  matcher: ["/dashboard/:path*", "/", '/sign-in', '/sign-up'],
 };

@@ -3,7 +3,7 @@ import { withQuery } from "with-query";
 import { TApiResponseData, TQueryParams, Resp } from "@/types/api.type";
 import { envClient } from "../lib/env/client";
 import { getSession } from "next-auth/react";
-import { TFilterDataWithMeta } from "@/types/vacancies.type";
+
 
 const API_BASE_URL = envClient.NEXT_PUBLIC_API_BASE_URL;
 
@@ -21,6 +21,7 @@ async function getAccessToken(): Promise<string | null> {
 
 axiosInstance.interceptors.request.use(async (config) => {
   const token = await getAccessToken();
+  console.log(token);
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
@@ -106,14 +107,6 @@ export async function fetchData<T>(
   headers?: Record<string, string>,
 ): Promise<TApiResponseData<T>> {
   return fetcher.get<TApiResponseData<T>>(url, params, headers);
-}
-
-export async function fetchDropdownData(
-  url: string,
-  params?: TQueryParams,
-  headers?: Record<string, string>,
-): Promise<TFilterDataWithMeta> {
-  return fetcher.get<TFilterDataWithMeta>(url, params, headers);
 }
 
 export async function postData<T>(

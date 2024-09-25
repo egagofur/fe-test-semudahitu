@@ -28,14 +28,15 @@ const SignUpPage = () => {
         });
 
         if (result?.error) {
+            router.push("/sign-in");
             console.log(result.error);
         } else {
+            router.push("/dashboard");
             toast({
                 title: "Berhasil",
                 description: "Anda berhasil masuk",
                 variant: "default",
             });
-            redirect( "/");
         }
     };
 
